@@ -104,7 +104,7 @@ resource "aws_ecs_task_definition" "task" {
       image = var.app_image
       portMappings = [{ containerPort = 8080, hostPort = 8080 }]
       environment = [
-        { name = "SPRING_DATASOURCE_URL", value = "jdbc:mysql://${aws_db_instance.mysql.address}:3306/franchise_db?useSSL=false&allowPublicKeyRetrieval=true" },
+        { name = "SPRING_DATASOURCE_URL", value ="jdbc:mysql://${aws_db_instance.mysql.address}:3306/franchise_db?useSSL=NO&allowPublicKeyRetrieval=true" },
         { name = "SPRING_DATASOURCE_USERNAME", value = var.db_username },
         { name = "SPRING_DATASOURCE_PASSWORD", value = var.db_password }
       ]

@@ -1,18 +1,15 @@
 spring:
   application:
     name: accenture
-  datasource:
-    url: jdbc:mysql://localhost:3306/franchise_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    datasource: 
+    url: jdbc:mysql://localhost:3306/franchise_db?useSSL=false&allowPublicKeyRetrieval=true
     username: franchise_user
     password: franchise_pass
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+      ddl-auto: update        # o create / create-drop, según prefieras
+    defer-datasource-initialization: true
   sql:
     init:
       mode: always
