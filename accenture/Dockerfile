@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
-ARG JAR_FILE=/app/target/franchise-api-1.0.0.jar
+ARG JAR_FILE=/app/target/accenture-1.0.0.jar
 WORKDIR /opt/app
 COPY --from=build ${JAR_FILE} app.jar
 EXPOSE 8080
