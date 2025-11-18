@@ -1,4 +1,4 @@
-package com.test.accenture;
+package com.test.franchise;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
