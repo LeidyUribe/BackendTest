@@ -1,15 +1,13 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
-    driverClassName: org.h2.Driver
-    username: sa
-    password: ''
+   datasource:
+    url: jdbc:mysql://localhost:3306/franchise_db?useSSL=false&allowPublicKeyRetrieval=true
+    username: franchise_user
+    password: franchise_pass
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+      ddl-auto: update
+    defer-datasource-initialization: true
+    
   sql:
     init:
       mode: never
