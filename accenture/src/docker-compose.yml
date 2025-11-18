@@ -21,7 +21,7 @@ services:
 
   app:
     build: .
-    container_name: franchise-api
+    container_name: accenture
     depends_on:
       db:
         condition: service_healthy
