@@ -39,7 +39,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long franchiseId, Long branchId, Long productId) {
-        Product product = getProduct(franchiseId, branchId, productId);
+        // Validar que la sucursal pertenezca a la franquicia
+        Branch branch = branchService.getBranch(franchiseId, branchId);
+        
+        // Validar que el producto exista y pertenezca a la sucursal
+        Product product = productRepository.findByIdAndBranchId(productId, branchId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Producto con ID %d no encontrado en la sucursal %d de la franquicia %d", 
+                                productId, branchId, franchiseId)));
+        
+        // Eliminar el producto del repositorio
+        // Con orphanRemoval = true en Branch, esto también actualizará la colección automáticamente
         productRepository.delete(product);
     }
 
