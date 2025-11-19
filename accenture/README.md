@@ -151,6 +151,13 @@ Franchise (1) ────────< (N) Branch (1) ────────<
 ## Servicios Expuestos
 
 ### Base URL
+
+**Cuando se ejecuta con Docker Compose:**
+```
+http://localhost:8081
+```
+
+**Cuando se ejecuta localmente con Maven:**
 ```
 http://localhost:8080
 ```
@@ -431,41 +438,110 @@ La API retorna códigos de estado HTTP estándar:
 
 ## Cómo Ejecutar
 
-### Opción 1: Maven (Recomendado para desarrollo)
+### Requisitos Previos
 
-```bash
-./mvnw spring-boot:run
-```
+- **Docker** y **Docker Compose** instalados
+- **Java 17** y **Maven 3.9+** (solo si ejecutas sin Docker)
 
-### Opción 2: Docker Compose
+### Opción 1: Docker Compose (Recomendado)
+
+Esta es la forma más sencilla de ejecutar toda la aplicación con un solo comando.
+
+#### 1. Levantar los servicios
 
 ```bash
 docker-compose up -d
 ```
 
-Esto iniciará:
-- MySQL 8 en el puerto 3306
-- La aplicación Spring Boot en el puerto 8080
+Este comando:
+- Construye la imagen de la aplicación Spring Boot
+- Inicia el contenedor de MySQL 8.3
+- Inicia el contenedor de la aplicación
+- Crea el usuario `franchise_user` automáticamente mediante el script `docker/init.sql`
 
-### Opción 3: Docker
+#### 2. Verificar el estado
+
+```bash
+# Ver estado de los contenedores
+docker-compose ps
+
+# Ver logs de la aplicación
+docker-compose logs app
+
+# Ver logs de la base de datos
+docker-compose logs db
+```
+
+#### 3. Acceder a la aplicación
+
+Una vez que los contenedores estén en ejecución:
+- **API Base URL**: `http://localhost:8081`
+- **Swagger UI**: `http://localhost:8081/swagger-ui.html`
+- **MySQL**: `localhost:3307` (usuario: `franchise_user`, contraseña: `franchise_pass`)
+
+#### 4. Detener los servicios
+
+```bash
+# Detener los contenedores
+docker-compose down
+
+# Detener y eliminar volúmenes (elimina los datos de la base de datos)
+docker-compose down -v
+```
+
+#### Notas importantes:
+
+- **Puertos**: 
+  - La aplicación corre en el puerto **8081** (mapeado desde 8080 del contenedor)
+  - MySQL corre en el puerto **3307** (mapeado desde 3306 del contenedor)
+  - Si estos puertos están en uso, puedes cambiarlos en `docker-compose.yml`
+
+- **Base de datos**: 
+  - El script `docker/init.sql` se ejecuta automáticamente al crear el contenedor por primera vez
+  - Los datos persisten en el volumen `db_data` incluso si detienes los contenedores
+
+- **Variables de entorno**:
+  - La aplicación se conecta a MySQL usando el nombre del servicio `db` (resolución DNS interna de Docker)
+  - Las credenciales están configuradas en `docker-compose.yml`
+
+### Opción 2: Maven (Desarrollo local)
+
+Requiere tener MySQL corriendo localmente o en otro contenedor.
+
+```bash
+# Ejecutar la aplicación
+./mvnw spring-boot:run
+```
+
+**Nota**: Asegúrate de que MySQL esté corriendo en `localhost:3306` con la base de datos `franchise_db` y el usuario `franchise_user` configurado.
+
+### Opción 3: Docker (Solo aplicación)
+
+Si ya tienes MySQL corriendo y solo quieres ejecutar la aplicación en Docker:
 
 ```bash
 # Construir la imagen
-docker build -t franchise-api .
+docker build -t accenture-app .
 
 # Ejecutar el contenedor
-docker run -p 8080:8080 franchise-api
+docker run -p 8081:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/franchise_db \
+  -e SPRING_DATASOURCE_USERNAME=franchise_user \
+  -e SPRING_DATASOURCE_PASSWORD=franchise_pass \
+  accenture-app
 ```
 
 ### Opción 4: JAR Ejecutable
 
 ```bash
-# Compilar
+# Compilar el proyecto
 ./mvnw clean package
 
-# Ejecutar
+# Ejecutar el JAR
 java -jar target/accenture-1.0.0.jar
 ```
+
+**Nota**: Requiere tener MySQL configurado y corriendo localmente.
 
 ---
 
@@ -473,6 +549,11 @@ java -jar target/accenture-1.0.0.jar
 
 Una vez que la aplicación esté ejecutándose, puedes acceder a:
 
+**Con Docker Compose:**
+- **Swagger UI**: http://localhost:8081/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8081/v3/api-docs
+
+**Con Maven local:**
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
 - **OpenAPI JSON**: http://localhost:8080/v3/api-docs
 
